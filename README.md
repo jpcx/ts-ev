@@ -1,5 +1,3 @@
-# [ts-ev 0.2.0](https://github.com/jpcx/ts-ev/blob/0.2.0/CHANGELOG.md) 
-
 [![](https://github.com/jpcx/ts-ev/blob/0.2.0/assets/logo.png)](#)
 
 ![](https://img.shields.io/github/issues/jpcx/ts-ev)
@@ -15,6 +13,8 @@
 ts-ev is a typed event emitter that provides removal protection, filtering, and inheritance.
 
 Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class such that each derived class has full access to its own events.
+
+**[changelog](https://github.com/jpcx/ts-ev/blob/0.2.0/CHANGELOG.md)**
 
 ## Features
 
