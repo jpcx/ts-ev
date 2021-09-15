@@ -1,12 +1,22 @@
-# [ts-ev](https://github.com/jpcx/ts-ev/blob/main/CHANGELOG.md) 
+# [ts-ev 0.2.0](https://github.com/jpcx/ts-ev/blob/0.2.0/CHANGELOG.md) 
 
-## About
+[![](https://github.com/jpcx/ts-ev/blob/0.2.0/assets/logo.png)](#)
+
+![](https://img.shields.io/github/issues/jpcx/ts-ev)
+![](https://img.shields.io/github/forks/jpcx/ts-ev)
+![](https://img.shields.io/github/stars/jpcx/ts-ev)
+![](https://img.shields.io/npm/dm/ts-ev)  
+![](https://img.shields.io/librariesio/dependents/npm/ts-ev)
+![](https://img.shields.io/github/license/jpcx/ts-ev)
+![](https://img.shields.io/librariesio/github/jpcx/ts-ev?label=dev-dependencies)
+
+[![](https://nodei.co/npm/ts-ev.png?mini=true)](https://www.npmjs.com/package/ts-ev)
 
 ts-ev is a typed event emitter that provides removal protection, filtering, and inheritance.
 
 Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class such that each derived class has full access to its own events.
 
-### Features
+## Features
 
 Execution Order Guarantees:
 - Ensures that `.emit()` operates on the currently registered listeners.
@@ -25,7 +35,7 @@ Filtering:
     - As the Data tparam defines the listener parameters type,
       filtering changes the type expected by a given listener.
 
-#### Template Parameters
+### Template Parameters
 
 ```ts
 export class Emitter<
@@ -59,11 +69,7 @@ Data:
   - Note: **Must be manually specified when using filters**.
     - This ensures consistency between the filter type assertion and the listener parameters type.
 
-### Usage
-
-```shell
-npm i --save "ts-ev"
-```
+## Usage
 
 ```ts
 import { Emitter } from "ts-ev";
