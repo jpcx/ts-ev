@@ -1,4 +1,4 @@
-[![](https://github.com/jpcx/ts-ev/blob/0.2.2/assets/logo.png)](#)
+[![](https://github.com/jpcx/ts-ev/blob/0.3.0/assets/logo.png)](#)
 
 ![](https://img.shields.io/github/issues/jpcx/ts-ev)
 ![](https://img.shields.io/github/forks/jpcx/ts-ev)
@@ -14,9 +14,9 @@ ts-ev is a typed event emitter that provides removal protection, filtering, and 
 
 Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class such that each derived class has full access to its own events.
 
-ts-ev has zero imports, so it should be usable in any context.
+ts-ev has zero imports, so it should be usable in any environment.
 
-**[changelog](https://github.com/jpcx/ts-ev/blob/0.2.2/CHANGELOG.md)**
+**[CHANGELOG](https://github.com/jpcx/ts-ev/blob/0.3.0/CHANGELOG.md)**
 
 ## Features
 
@@ -33,9 +33,9 @@ Protection:
 Filtering:
   - Supply a type assertion to narrow down the type expected by a listener.
   - Listeners are not called unless their associated filter passes.
-  - Requires the Data tparam to be manually specified.
-    - As the Data tparam defines the listener parameters type,
-      filtering changes the type expected by a given listener.
+  - Filters must be type predicates and must specify both the input and output types.
+    - e.g.: `(args: [number, string]): args is [1, "foo"] => args[0] === 1 && args[1] === "foo"`
+  - Filtering changes the listener parameters type.
 
 ### Template Parameters
 
@@ -68,9 +68,7 @@ Ev:
 Data:
 - Represents the data received by an event listener (parameters array).
   - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-  - Note: **Must be manually specified when using filters**.
-    - This ensures consistency between the filter type assertion and the listener parameters type.
-    - May be manually specified by listener rather than as a tparam.
+- Modified when a filter is provided.
 
 ## Usage
 
@@ -110,25 +108,38 @@ foo.off("baseEv2", l);
 // protection
 
 foo.on("baseEv2", l, { protect: true });
-foo.off("baseEv2");    // does not remove the above listener
-foo.off();             // does not remove the above listener
+foo.off("baseEv2"); // does not remove the above listener
+foo.off(); // does not remove the above listener
 foo.off("baseEv2", l); // OK
 
 // filtering
 
-// must specify the expected type (extends original type)
-foo.on<"baseEv1", [number, "foo", boolean]>(
+foo.on(
   "baseEv1",
-  (a, b, c) => console.log(a, b, c), // b is type "foo" (instead of type "string")
+  // TS Types:
+  //   (parameter) a: 1
+  //   (parameter) b: "foo"
+  //   (parameter) c: boolean
+  (a, b, c) => console.log(a, b, c),
   {
-    protect: true,
-    filter: (data: [number, string, boolean]): data is [number, "foo", boolean] =>
-      data[1] === "foo",
+    // note: must explicitly specify both the source and expected type
+    filter: (data: [number, string, boolean]): data is [1, "foo", boolean] =>
+      data[0] === 1 && data[1] === "foo",
   }
 );
 
+// TS Types:
+//   const two: 2
+//   const baz: "baz"
+const [two, baz] = await foo.once("baseEv1", {
+  filter: (data: [number, string, boolean]): data is [2, "bar", boolean] =>
+    data[0] === 2 && data[1] === "baz",
+});
+
 // inheritance
 
+// extending the Foo emitter
+// note: this only works because Foo passes its DerivedEvents tparam to Emitter
 class Bar extends Foo<{
   derivedEv: (add: "more", events: "to", the: "emitter") => any;
 }> {
@@ -167,4 +178,4 @@ Contribution is welcome! Please raise an issue or make a pull request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.2.2/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.3.0/LICENSE) file for details

@@ -45,9 +45,9 @@
  * Filtering:
  *   - Supply a type assertion to narrow down the type expected by a listener.
  *   - Listeners are not called unless their associated filter passes.
- *   - Requires the Data tparam to be manually specified.
- *     - As the Data tparam defines the listener parameters type,
- *       filtering changes the type expected by a given listener.
+ *   - Filters must be type predicates and must specify both the input and output types.
+ *     - e.g.: `(args: [number, string]): args is [1, "foo"] => args[0] === 1 && args[1] === "foo"`
+ *   - Filtering changes the listener parameters type.
  *
  * @tparam BaseEvents:
  *   - Maps any listeners that are used directly by the top-level emitter to an event string.
@@ -60,72 +60,85 @@
  *
  * @example
  *   import { Emitter } from "ts-ev";
- *
+ *   
  *   class Foo<
  *     DerivedEvents extends Emitter.Events.Except<"baseEv1" | "baseEv2">
  *   > extends Emitter<
  *     {
- *       baseEv1: (typed: number, args: string) => any;
+ *       baseEv1: (requires: number, these: string, args: boolean) => any;
  *       baseEv2: () => any;
  *     },
  *     DerivedEvents
  *   > {
  *     constructor() {
  *       super();
- *       setTimeout(() => this.emit("baseEv1", 1, "foo"), 100);
+ *       setTimeout(() => this.emit("baseEv1", 1, "foo", true), 100);
  *       setTimeout(() => this.emit("baseEv2"), 1000);
- *
+ *   
  *       // this.emit("derivedEv")    // ts error
  *       // this.emit("anythingElse") // ts error
  *     }
  *   }
- *
+ *   
  *   const foo = new Foo();
- *
+ *   
  *   // standard on/once/off functionality
- *
- *   const [a, b] = await foo.once("baseEv1");
+ *   
+ *   await foo.once("baseEv2");
  *   const l = () => console.log("received");
  *   foo.on("baseEv2", l);
  *   foo.off("baseEv2", l);
  *   // or foo.off("baseEv2");
  *   // or foo.off();
- *
+ *   
  *   // protection
- *
+ *   
  *   foo.on("baseEv2", l, { protect: true });
- *   foo.off("baseEv2");    // does not remove the above listener
- *   foo.off();             // does not remove the above listener
+ *   foo.off("baseEv2"); // does not remove the above listener
+ *   foo.off(); // does not remove the above listener
  *   foo.off("baseEv2", l); // OK
- *
+ *   
  *   // filtering
- *
- *   // must specify the expected type (extends original type)
- *   foo.on<"baseEv1", [number, "foo"]>(
+ *   
+ *   foo.on(
  *     "baseEv1",
- *     (a, b) => console.log(a, b), // b is type "foo" (instead of type "string")
+ *     // TS Types:
+ *     //   (parameter) a: 1
+ *     //   (parameter) b: "foo"
+ *     //   (parameter) c: boolean
+ *     (a, b, c) => console.log(a, b, c),
  *     {
- *       protect: true,
- *       filter: (data: [number, string, boolean]): data is [number, "foo", boolean] =>
- *         data[1] === "foo",
+ *       // note: must explicitly specify both the source and expected type
+ *       filter: (data: [number, string, boolean]): data is [1, "foo", boolean] =>
+ *         data[0] === 1 && data[1] === "foo",
  *     }
  *   );
- *
+ *   
+ *   // TS Types:
+ *   //   const two: 2
+ *   //   const baz: "baz"
+ *   const [two, baz] = await foo.once("baseEv1", {
+ *     filter: (data: [number, string, boolean]): data is [2, "bar", boolean] =>
+ *       data[0] === 2 && data[1] === "baz",
+ *   });
+ *   
  *   // inheritance
- *
+ *   
+ *   // extending the Foo emitter
+ *   // note: this only works because Foo passes its DerivedEvents tparam to Emitter
  *   class Bar extends Foo<{
- *     derivedEv: (more: "events") => any;
+ *     derivedEv: (add: "more", events: "to", the: "emitter") => any;
  *   }> {
  *     constructor() {
  *       super();
- *
+ *   
  *       // can operate on base class events
- *       setTimeout(() => this.emit("baseEv1", 1, "foo"), 100);
+ *       setTimeout(() => this.emit("baseEv1", 1, "foo", true), 100);
  *       // can operate on events provided to Foo via OtherEvents
- *       setTimeout(() => this.emit("derivedEv", "events"), 200);
+ *       setTimeout(() => this.emit("derivedEv", "more", "to", "emitter"), 200);
  *     }
  *   }
- *
+ *   
  *   const bar = new Bar();
  *   bar.on("baseEv2", () => console.log("receives base class events!"));
  *   bar.on("derivedEv", () => console.log("receives derived class events!"));
@@ -168,16 +181,14 @@ export class Emitter<
    * @tparam Data
    *   - Represents the data received by an event listener (parameters array).
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-   *     - Note: **Must be manually specified when using filters**.
-   *       - This ensures consistency between the filter type assertion and the listener parameters type.
-   *       - May be manually specified by listener rather than as a tparam.
+   *   - Modified when a filter is provided.
    */
   public on<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
-    Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
+    Data extends EvData<BaseEvents, DerivedEvents, Ev>
   >(
     ev: Ev,
-    listener: (...args: Data) => any,
+    listener: (...data: Data) => any,
     options?: {
       filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
       protect?: boolean;
@@ -206,9 +217,7 @@ export class Emitter<
    * @tparam Data
    *   - Represents the data received by an event listener (parameters array).
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-   *     - Note: **Must be manually specified when using filters**.
-   *       - This ensures consistency between the filter type assertion and the listener parameters type.
-   *       - May be manually specified by listener rather than as a tparam.
+   *   - Modified when a filter is provided.
    */
   public prependOn<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -244,9 +253,7 @@ export class Emitter<
    * @tparam Data
    *   - Represents the data received by an event listener (parameters array).
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-   *     - Note: **Must be manually specified when using filters**.
-   *       - This ensures consistency between the filter type assertion and the listener parameters type.
-   *       - May be manually specified by listener rather than as a tparam.
+   *   - Modified when a filter is provided.
    */
   public once<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -267,9 +274,7 @@ export class Emitter<
    * @tparam Data
    *   - Represents the data received by an event listener (parameters array).
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-   *     - Note: **Must be manually specified when using filters**.
-   *       - This ensures consistency between the filter type assertion and the listener parameters type.
-   *       - May be manually specified by listener rather than as a tparam.
+   *   - Modified when a filter is provided.
    */
   public once<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -332,9 +337,7 @@ export class Emitter<
    * @tparam Data
    *   - Represents the data received by an event listener (parameters array).
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-   *     - Note: **Must be manually specified when using filters**.
-   *       - This ensures consistency between the filter type assertion and the listener parameters type.
-   *       - May be manually specified by listener rather than as a tparam.
+   *   - Modified when a filter is provided.
    */
   public prependOnce<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -355,9 +358,7 @@ export class Emitter<
    * @tparam Data
    *   - Represents the data received by an event listener (parameters array).
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-   *     - Note: **Must be manually specified when using filters**.
-   *       - This ensures consistency between the filter type assertion and the listener parameters type.
-   *       - May be manually specified by listener rather than as a tparam.
+   *   - Modified when a filter is provided.
    */
   public prependOnce<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -420,9 +421,7 @@ export class Emitter<
    * @tparam Data
    *   - Represents the data received by an event listener (parameters array).
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
-   *     - Note: **Must be manually specified when using filters**.
-   *       - This ensures consistency between the filter type assertion and the listener parameters type.
-   *       - May be manually specified by listener rather than as a tparam.
+   *   - Modified when a filter is provided.
    */
   public off<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -434,9 +433,7 @@ export class Emitter<
    * @tparam Ev
    *   - Represents the event passed to the function
    */
-  public off<
-    Ev extends keyof BaseEvents | keyof DerivedEvents
-  >(ev: Ev): this;
+  public off<Ev extends keyof BaseEvents | keyof DerivedEvents>(ev: Ev): this;
   /** Remove all listeners (skips 'protected' listeners). */
   public off(): this;
   public off<
@@ -541,18 +538,7 @@ type DataFilter<
   DerivedEvents extends { [event: string]: (...args: any[]) => any },
   Ev extends keyof BaseEvents | keyof DerivedEvents,
   Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
-> = Exact<Data, EvData<BaseEvents, DerivedEvents, Ev>> extends never
-  ? Ev extends keyof BaseEvents
-    ? (data: Parameters<BaseEvents[Ev]>) => data is Data
-    : Ev extends keyof DerivedEvents
-    ? (data: Parameters<DerivedEvents[Ev]>) => data is Data
-    : never
-  : never;
-
-/** T if two types are exactly the same, never if not. (thanks to https://stackoverflow.com/a/53808212) */
-type Exact<T, U> = (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2
-  ? T
-  : never;
+> = <From extends EvData<BaseEvents, DerivedEvents, Ev>>(args: From) => args is Data;
 
 // vim: fdm=marker:fmr=\ {*/,\ }*/
 

@@ -1,5 +1,21 @@
 # Changelog
 
+<a name="0.3.0"></a>
+
+## [0.3.0](https://github.com/jpcx/ts-ev/tree/0.3.0) (2021-09-15)
+
+| __[Changes since 0.2.2](https://github.com/jpcx/ts-ev/compare/0.2.2...0.3.0)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.3.0) | [README](https://github.com/jpcx/ts-ev/tree/0.3.0/README.md) |
+| --- | --- | --- |
+
+| [Source Code (zip)](https://github.com/jpcx/ts-ev/archive/0.3.0.zip) | [Source Code (tar.gz)](https://github.com/jpcx/ts-ev/archive/0.3.0.tar.gz) |
+| --- | --- |
+
+### Changed
+
+- Simplified filter type narrowing for clarity.
+  - Filter must now specify both the input and output types:
+    e.g. `(args: [number, string]): args is [1, "foo"] => args[0] === 1 && args[1] === "foo"`
+
 <a name="0.2.2"></a>
 
 ## [0.2.2](https://github.com/jpcx/ts-ev/tree/0.2.2) (2021-09-15)
