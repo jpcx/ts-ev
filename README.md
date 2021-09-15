@@ -1,4 +1,4 @@
-[![](https://github.com/jpcx/ts-ev/blob/0.2.1/assets/logo.png)](#)
+[![](https://github.com/jpcx/ts-ev/blob/0.2.2/assets/logo.png)](#)
 
 ![](https://img.shields.io/github/issues/jpcx/ts-ev)
 ![](https://img.shields.io/github/forks/jpcx/ts-ev)
@@ -16,7 +16,7 @@ Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily de
 
 ts-ev has zero imports, so it should be usable in any context.
 
-**[changelog](https://github.com/jpcx/ts-ev/blob/0.2.1/CHANGELOG.md)**
+**[changelog](https://github.com/jpcx/ts-ev/blob/0.2.2/CHANGELOG.md)**
 
 ## Features
 
@@ -70,6 +70,7 @@ Data:
   - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
   - Note: **Must be manually specified when using filters**.
     - This ensures consistency between the filter type assertion and the listener parameters type.
+    - May be manually specified by listener rather than as a tparam.
 
 ## Usage
 
@@ -145,3 +146,25 @@ const bar = new Bar();
 bar.on("baseEv2", () => console.log("receives base class events!"));
 bar.on("derivedEv", () => console.log("receives derived class events!"));
 ```
+
+## Testing
+
+```
+npm test
+```
+
+Uses [@jpcx/testts](https://github.com/jpcx/testts) for internal unit testing.
+
+Additionally, this project is relied on heavily by my [node-kraken-api](https://github.com/jpcx/node-kraken-api) package, so it has received plenty of integration testing.
+
+## Development
+
+Contribution is welcome! Please raise an issue or make a pull request.
+
+## Author
+
+**Justin Collier** - [jpcx](https://github.com/jpcx)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.2.2/LICENSE) file for details
