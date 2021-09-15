@@ -14,6 +14,8 @@ ts-ev is a typed event emitter that provides removal protection, filtering, and 
 
 Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class such that each derived class has full access to its own events.
 
+ts-ev has zero imports, so it should be usable in any context.
+
 **[changelog](https://github.com/jpcx/ts-ev/blob/0.2.0/CHANGELOG.md)**
 
 ## Features
