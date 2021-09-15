@@ -170,6 +170,7 @@ export class Emitter<
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
    *     - Note: **Must be manually specified when using filters**.
    *       - This ensures consistency between the filter type assertion and the listener parameters type.
+   *       - May be manually specified by listener rather than as a tparam.
    */
   public on<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -207,6 +208,7 @@ export class Emitter<
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
    *     - Note: **Must be manually specified when using filters**.
    *       - This ensures consistency between the filter type assertion and the listener parameters type.
+   *       - May be manually specified by listener rather than as a tparam.
    */
   public prependOn<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -244,6 +246,7 @@ export class Emitter<
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
    *     - Note: **Must be manually specified when using filters**.
    *       - This ensures consistency between the filter type assertion and the listener parameters type.
+   *       - May be manually specified by listener rather than as a tparam.
    */
   public once<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -266,6 +269,7 @@ export class Emitter<
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
    *     - Note: **Must be manually specified when using filters**.
    *       - This ensures consistency between the filter type assertion and the listener parameters type.
+   *       - May be manually specified by listener rather than as a tparam.
    */
   public once<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -330,6 +334,7 @@ export class Emitter<
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
    *     - Note: **Must be manually specified when using filters**.
    *       - This ensures consistency between the filter type assertion and the listener parameters type.
+   *       - May be manually specified by listener rather than as a tparam.
    */
   public prependOnce<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -352,6 +357,7 @@ export class Emitter<
    *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
    *     - Note: **Must be manually specified when using filters**.
    *       - This ensures consistency between the filter type assertion and the listener parameters type.
+   *       - May be manually specified by listener rather than as a tparam.
    */
   public prependOnce<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
@@ -406,23 +412,37 @@ export class Emitter<
     /*· }*/
   }
 
-  /** Remove a specific event listener (removes 'protected' listeners). */
-  public off<Ev extends keyof BaseEvents | keyof DerivedEvents>(
-    ev: Ev,
-    listener: EvListener<BaseEvents, DerivedEvents, Ev>
-  ): this;
-  /** Remove all listeners for an event (skips 'protected' listeners). */
-  public off<Ev extends keyof BaseEvents | keyof DerivedEvents>(ev: Ev): this;
+  /**
+   * Remove a specific event listener (removes 'protected' listeners).
+   *
+   * @tparam Ev
+   *   - Represents the event passed to the function
+   * @tparam Data
+   *   - Represents the data received by an event listener (parameters array).
+   *     - Set by default to the corresponding `BaseEvents` or `DerivedEvents` value.
+   *     - Note: **Must be manually specified when using filters**.
+   *       - This ensures consistency between the filter type assertion and the listener parameters type.
+   *       - May be manually specified by listener rather than as a tparam.
+   */
+  public off<
+    Ev extends keyof BaseEvents | keyof DerivedEvents,
+    Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
+  >(ev: Ev, listener: (...args: Data) => any): this;
+  /**
+   * Remove all listeners for an event (skips 'protected' listeners)..
+   *
+   * @tparam Ev
+   *   - Represents the event passed to the function
+   */
+  public off<
+    Ev extends keyof BaseEvents | keyof DerivedEvents
+  >(ev: Ev): this;
   /** Remove all listeners (skips 'protected' listeners). */
   public off(): this;
-  public off<Ev extends keyof BaseEvents | keyof DerivedEvents>(
-    ev?: Ev,
-    listener?: Ev extends keyof BaseEvents
-      ? BaseEvents[Ev]
-      : Ev extends keyof DerivedEvents
-      ? DerivedEvents[Ev]
-      : never
-  ): this {
+  public off<
+    Ev extends keyof BaseEvents | keyof DerivedEvents,
+    Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
+  >(ev?: Ev, listener?: (...args: Data) => any): this {
     /*· {*/
 
     if (ev !== undefined && listener !== undefined) {
@@ -495,7 +515,7 @@ export module Emitter {
 /*                                                                    Detail {*/
 
 /** Determines the Emitter listener type given an event and listener dict pair. */
-export type EvListener<
+type EvListener<
   BaseEvents extends { [event: string]: (...args: any[]) => any },
   DerivedEvents extends { [event: string]: (...args: any[]) => any },
   Ev extends keyof BaseEvents | keyof DerivedEvents
@@ -506,7 +526,7 @@ export type EvListener<
   : never;
 
 /** Determines the Emitter listener parameters type given an event and listener dict pair. */
-export type EvData<
+type EvData<
   BaseEvents extends { [event: string]: (...args: any[]) => any },
   DerivedEvents extends { [event: string]: (...args: any[]) => any },
   Ev extends keyof BaseEvents | keyof DerivedEvents
@@ -516,21 +536,21 @@ export type EvData<
  * Determines the Emitter filter type given an event, listener dict pair, and target args type.
  * Disables the filter if Args is not provided.
  */
-export type DataFilter<
+type DataFilter<
   BaseEvents extends { [event: string]: (...args: any[]) => any },
   DerivedEvents extends { [event: string]: (...args: any[]) => any },
   Ev extends keyof BaseEvents | keyof DerivedEvents,
-  Args extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
-> = Exact<Args, EvData<BaseEvents, DerivedEvents, Ev>> extends never
+  Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
+> = Exact<Data, EvData<BaseEvents, DerivedEvents, Ev>> extends never
   ? Ev extends keyof BaseEvents
-    ? (args: Parameters<BaseEvents[Ev]>) => args is Args
+    ? (data: Parameters<BaseEvents[Ev]>) => data is Data
     : Ev extends keyof DerivedEvents
-    ? (args: Parameters<DerivedEvents[Ev]>) => args is Args
+    ? (data: Parameters<DerivedEvents[Ev]>) => data is Data
     : never
   : never;
 
 /** T if two types are exactly the same, never if not. (thanks to https://stackoverflow.com/a/53808212) */
-export type Exact<T, U> = (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2
+type Exact<T, U> = (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2
   ? T
   : never;
 

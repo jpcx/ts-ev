@@ -1,6 +1,6 @@
 {
   "name": "ts-ev",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "a typed event emitter that provides removal protection, filtering, and inheritance",
   "license": "MIT",
   "repository": "git://github.com/jpcx/ts-ev.git",

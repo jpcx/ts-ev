@@ -1,16 +1,34 @@
 # Changelog
 
+<a name="0.2.2"></a>
+
+## [0.2.2](https://github.com/jpcx/ts-ev/tree/0.2.2) (2021-09-15)
+
+| __[Changes since 0.2.1](https://github.com/jpcx/ts-ev/compare/0.2.1...0.2.2)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.2.2) | [README](https://github.com/jpcx/ts-ev/tree/0.2.2/README.md) |
+| --- | --- | --- |
+
+| [Source Code (zip)](https://github.com/jpcx/ts-ev/archive/0.2.2.zip) | [Source Code (tar.gz)](https://github.com/jpcx/ts-ev/archive/0.2.2.tar.gz) |
+| --- | --- |
+
+### Fixed
+
+- More variable name consistency.
+- Changelog and README edits.
+- `.off()`: Data tparam.
+
 <a name="0.2.1"></a>
 
 ## [0.2.1](https://github.com/jpcx/ts-ev/tree/0.2.1) (2021-09-15)
 
-| __[Changes since 0.1.0](https://github.com/jpcx/ts-ev/compare/0.2.0...0.2.1)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.2.1) | [README](https://github.com/jpcx/ts-ev/tree/0.2.1/README.md) |
+| __[Changes since 0.2.0](https://github.com/jpcx/ts-ev/compare/0.2.0...0.2.1)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.2.1) | [README](https://github.com/jpcx/ts-ev/tree/0.2.1/README.md) |
 | --- | --- | --- |
 
 | [Source Code (zip)](https://github.com/jpcx/ts-ev/archive/0.2.1.zip) | [Source Code (tar.gz)](https://github.com/jpcx/ts-ev/archive/0.2.1.tar.gz) |
 | --- | --- |
 
-Fixed variable name consistency.
+### Fixed
+
+- Variable name consistency.
 
 <a name="0.2.0"></a>
 
@@ -22,7 +40,9 @@ Fixed variable name consistency.
 | [Source Code (zip)](https://github.com/jpcx/ts-ev/archive/0.2.0.zip) | [Source Code (tar.gz)](https://github.com/jpcx/ts-ev/archive/0.2.0.tar.gz) |
 | --- | --- |
 
-Minor changes to the README.
+### Changed
+
+- Minor changes to the README.
 
 <a name="0.1.0"></a>
 
@@ -34,4 +54,6 @@ Minor changes to the README.
 | [Source Code (zip)](https://github.com/jpcx/ts-ev/archive/0.1.0.zip) | [Source Code (tar.gz)](https://github.com/jpcx/ts-ev/archive/0.1.0.tar.gz) |
 | --- | --- |
 
-First Release!
+### Added
+
+- First Release!
