@@ -8,38 +8,38 @@ class Emitter {
             if (prop[0] === "_")
                 Object.defineProperty(this, prop, Object.assign(Object.assign({}, descr), { enumerable: false }));
     }
-    on(event, listener, options) {
-        const info = this._evinfo[event];
+    on(ev, listener, options) {
+        const info = this._evinfo[ev];
         const opts = Object.assign({ once: false }, options);
         if (info)
             info.push([listener, opts]);
         else
-            this._evinfo[event] = [[listener, opts]];
+            this._evinfo[ev] = [[listener, opts]];
         return this;
     }
-    prependOn(event, listener, options) {
-        const info = this._evinfo[event];
+    prependOn(ev, listener, options) {
+        const info = this._evinfo[ev];
         const opts = Object.assign({ once: false }, options);
         if (info)
             info.unshift([listener, opts]);
         else
-            this._evinfo[event] = [[listener, opts]];
+            this._evinfo[ev] = [[listener, opts]];
         return this;
     }
-    once(ev, cbOrOptions, options) {
-        if (typeof cbOrOptions === "function") {
+    once(ev, listenerOrOptions, options) {
+        if (typeof listenerOrOptions === "function") {
             const info = this._evinfo[ev];
             const opts = Object.assign({ once: true }, options);
             if (info)
-                info.push([cbOrOptions, opts]);
+                info.push([listenerOrOptions, opts]);
             else
-                this._evinfo[ev] = [[cbOrOptions, opts]];
+                this._evinfo[ev] = [[listenerOrOptions, opts]];
             return this;
         }
         else {
             return new Promise((resolve) => {
                 const info = this._evinfo[ev];
-                const opts = Object.assign(Object.assign({ once: true }, cbOrOptions), { protect: true });
+                const opts = Object.assign(Object.assign({ once: true }, listenerOrOptions), { protect: true });
                 const shim = (...data) => resolve(data);
                 if (info)
                     info.push([shim, opts]);
@@ -48,20 +48,20 @@ class Emitter {
             });
         }
     }
-    prependOnce(ev, cbOrOptions, options) {
-        if (typeof cbOrOptions === "function") {
+    prependOnce(ev, listenerOrOptions, options) {
+        if (typeof listenerOrOptions === "function") {
             const info = this._evinfo[ev];
             const opts = Object.assign({ once: true }, options);
             if (info)
-                info.unshift([cbOrOptions, opts]);
+                info.unshift([listenerOrOptions, opts]);
             else
-                this._evinfo[ev] = [[cbOrOptions, opts]];
+                this._evinfo[ev] = [[listenerOrOptions, opts]];
             return this;
         }
         else {
             return new Promise((resolve) => {
                 const info = this._evinfo[ev];
-                const opts = Object.assign(Object.assign({ once: true }, cbOrOptions), { protect: true });
+                const opts = Object.assign(Object.assign({ once: true }, listenerOrOptions), { protect: true });
                 const shim = (...data) => resolve(data);
                 if (info)
                     info.unshift([shim, opts]);
@@ -70,11 +70,11 @@ class Emitter {
             });
         }
     }
-    off(ev, cb) {
-        if (ev !== undefined && cb !== undefined) {
+    off(ev, listener) {
+        if (ev !== undefined && listener !== undefined) {
             const cbs = this._evinfo[ev];
             if (cbs) {
-                cbs.splice(cbs.findIndex(([l]) => l === cb), 1);
+                cbs.splice(cbs.findIndex(([l]) => l === listener), 1);
                 if (cbs.length === 0)
                     delete this._evinfo[ev];
             }
@@ -97,13 +97,13 @@ class Emitter {
         }
         return this;
     }
-    emit(event, ...data) {
-        if (this._evinfo[event])
-            for (const [cb, { once, filter }] of [...this._evinfo[event]])
+    emit(ev, ...data) {
+        if (this._evinfo[ev])
+            for (const [cb, { once, filter }] of [...this._evinfo[ev]])
                 if (filter ? filter(data) : true) {
                     cb(...data);
                     if (once)
-                        this.off(event, cb);
+                        this.off(ev, cb);
                 }
         return this;
     }

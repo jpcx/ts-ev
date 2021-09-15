@@ -5,32 +5,32 @@ export declare class Emitter<BaseEvents extends {
 } = {}> {
     private _evinfo;
     constructor();
-    on<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(event: Ev, listener: (...args: Data) => any, options?: {
+    on<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, listener: (...args: Data) => any, options?: {
         filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
         protect?: boolean;
     }): this;
-    prependOn<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(event: Ev, listener: (...args: Data) => any, options?: {
+    prependOn<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, listener: (...args: Data) => any, options?: {
         filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
         protect?: boolean;
     }): this;
-    once<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, cb: (...args: Data) => any, options?: {
+    once<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, listener: (...args: Data) => any, options?: {
         filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
         protect?: boolean;
     }): this;
     once<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, options?: {
         filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
     }): Promise<Data>;
-    prependOnce<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, cb: (...args: Data) => any, options?: {
+    prependOnce<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, listener: (...args: Data) => any, options?: {
         filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
         protect?: boolean;
     }): this;
     prependOnce<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, options?: {
         filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
     }): Promise<Data>;
-    off<Ev extends keyof BaseEvents | keyof DerivedEvents>(ev: Ev, cb: EvListener<BaseEvents, DerivedEvents, Ev>): this;
+    off<Ev extends keyof BaseEvents | keyof DerivedEvents>(ev: Ev, listener: EvListener<BaseEvents, DerivedEvents, Ev>): this;
     off<Ev extends keyof BaseEvents | keyof DerivedEvents>(ev: Ev): this;
     off(): this;
-    emit<Ev extends keyof BaseEvents | keyof DerivedEvents>(event: Ev, ...data: EvData<BaseEvents, DerivedEvents, Ev>): this;
+    emit<Ev extends keyof BaseEvents | keyof DerivedEvents>(ev: Ev, ...data: EvData<BaseEvents, DerivedEvents, Ev>): this;
 }
 export declare module Emitter {
     type Events = {

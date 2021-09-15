@@ -1,4 +1,4 @@
-[![](https://github.com/jpcx/ts-ev/blob/0.2.0/assets/logo.png)](#)
+[![](https://github.com/jpcx/ts-ev/blob/0.2.1/assets/logo.png)](#)
 
 ![](https://img.shields.io/github/issues/jpcx/ts-ev)
 ![](https://img.shields.io/github/forks/jpcx/ts-ev)
@@ -16,7 +16,7 @@ Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily de
 
 ts-ev has zero imports, so it should be usable in any context.
 
-**[changelog](https://github.com/jpcx/ts-ev/blob/0.2.0/CHANGELOG.md)**
+**[changelog](https://github.com/jpcx/ts-ev/blob/0.2.1/CHANGELOG.md)**
 
 ## Features
 

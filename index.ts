@@ -129,7 +129,6 @@
  *   const bar = new Bar();
  *   bar.on("baseEv2", () => console.log("receives base class events!"));
  *   bar.on("derivedEv", () => console.log("receives derived class events!"));
- *
  */
 export class Emitter<
   BaseEvents extends { [event: string]: (...args: any[]) => any },
@@ -176,7 +175,7 @@ export class Emitter<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
     Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
   >(
-    event: Ev,
+    ev: Ev,
     listener: (...args: Data) => any,
     options?: {
       filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
@@ -185,14 +184,14 @@ export class Emitter<
   ): this {
     /*· {*/
 
-    const info = this._evinfo[event];
+    const info = this._evinfo[ev];
     const opts = { once: false, ...options } as {
       readonly once: boolean;
       readonly protect?: boolean;
       readonly filter?: (args: any[]) => boolean;
     };
     if (info) info.push([listener, opts]);
-    else this._evinfo[event] = [[listener, opts]];
+    else this._evinfo[ev] = [[listener, opts]];
     return this;
 
     /*· }*/
@@ -213,7 +212,7 @@ export class Emitter<
     Ev extends keyof BaseEvents | keyof DerivedEvents,
     Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
   >(
-    event: Ev,
+    ev: Ev,
     listener: (...args: Data) => any,
     options?: {
       filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
@@ -222,14 +221,14 @@ export class Emitter<
   ): this {
     /*· {*/
 
-    const info = this._evinfo[event];
+    const info = this._evinfo[ev];
     const opts = { once: false, ...options } as {
       readonly once: boolean;
       readonly protect?: boolean;
       readonly filter?: (args: any[]) => boolean;
     };
     if (info) info.unshift([listener, opts]);
-    else this._evinfo[event] = [[listener, opts]];
+    else this._evinfo[ev] = [[listener, opts]];
     return this;
 
     /*· }*/
@@ -251,7 +250,7 @@ export class Emitter<
     Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
   >(
     ev: Ev,
-    cb: (...args: Data) => any,
+    listener: (...args: Data) => any,
     options?: {
       filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
       protect?: boolean;
@@ -282,7 +281,7 @@ export class Emitter<
     Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
   >(
     ev: Ev,
-    cbOrOptions?:
+    listenerOrOptions?:
       | ((...args: Data) => any)
       | { filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data> },
     options?: {
@@ -292,22 +291,22 @@ export class Emitter<
   ): this | Promise<Data> {
     /*· {*/
 
-    if (typeof cbOrOptions === "function") {
+    if (typeof listenerOrOptions === "function") {
       const info = this._evinfo[ev];
       const opts = { once: true, ...options } as {
         readonly once: boolean;
         readonly protect?: boolean;
         readonly filter?: (args: any[]) => boolean;
       };
-      if (info) info.push([cbOrOptions, opts]);
-      else this._evinfo[ev] = [[cbOrOptions, opts]];
+      if (info) info.push([listenerOrOptions, opts]);
+      else this._evinfo[ev] = [[listenerOrOptions, opts]];
 
       return this;
     } else {
       return new Promise((resolve) => {
         const info = this._evinfo[ev];
         // force protect for promises
-        const opts = { once: true, ...cbOrOptions, protect: true } as {
+        const opts = { once: true, ...listenerOrOptions, protect: true } as {
           readonly once: boolean;
           readonly protect?: boolean;
           readonly filter?: (args: any[]) => boolean;
@@ -337,7 +336,7 @@ export class Emitter<
     Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
   >(
     ev: Ev,
-    cb: (...args: Data) => any,
+    listener: (...args: Data) => any,
     options?: {
       filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
       protect?: boolean;
@@ -368,7 +367,7 @@ export class Emitter<
     Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
   >(
     ev: Ev,
-    cbOrOptions?:
+    listenerOrOptions?:
       | ((...args: Data) => any)
       | { filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data> },
     options?: {
@@ -378,22 +377,22 @@ export class Emitter<
   ): this | Promise<Data> {
     /*· {*/
 
-    if (typeof cbOrOptions === "function") {
+    if (typeof listenerOrOptions === "function") {
       const info = this._evinfo[ev];
       const opts = { once: true, ...options } as {
         readonly once: boolean;
         readonly protect?: boolean;
         readonly filter?: (args: any[]) => boolean;
       };
-      if (info) info.unshift([cbOrOptions, opts]);
-      else this._evinfo[ev] = [[cbOrOptions, opts]];
+      if (info) info.unshift([listenerOrOptions, opts]);
+      else this._evinfo[ev] = [[listenerOrOptions, opts]];
 
       return this;
     } else {
       return new Promise((resolve) => {
         const info = this._evinfo[ev];
         // force protect for promises
-        const opts = { once: true, ...cbOrOptions, protect: true } as {
+        const opts = { once: true, ...listenerOrOptions, protect: true } as {
           readonly once: boolean;
           readonly protect?: boolean;
           readonly filter?: (args: any[]) => boolean;
@@ -410,7 +409,7 @@ export class Emitter<
   /** Remove a specific event listener (removes 'protected' listeners). */
   public off<Ev extends keyof BaseEvents | keyof DerivedEvents>(
     ev: Ev,
-    cb: EvListener<BaseEvents, DerivedEvents, Ev>
+    listener: EvListener<BaseEvents, DerivedEvents, Ev>
   ): this;
   /** Remove all listeners for an event (skips 'protected' listeners). */
   public off<Ev extends keyof BaseEvents | keyof DerivedEvents>(ev: Ev): this;
@@ -418,7 +417,7 @@ export class Emitter<
   public off(): this;
   public off<Ev extends keyof BaseEvents | keyof DerivedEvents>(
     ev?: Ev,
-    cb?: Ev extends keyof BaseEvents
+    listener?: Ev extends keyof BaseEvents
       ? BaseEvents[Ev]
       : Ev extends keyof DerivedEvents
       ? DerivedEvents[Ev]
@@ -426,12 +425,12 @@ export class Emitter<
   ): this {
     /*· {*/
 
-    if (ev !== undefined && cb !== undefined) {
+    if (ev !== undefined && listener !== undefined) {
       // delete this event callback (regardless of lock setting)
       const cbs = this._evinfo[ev];
       if (cbs) {
         cbs.splice(
-          cbs.findIndex(([l]) => l === cb),
+          cbs.findIndex(([l]) => l === listener),
           1
         );
         if (cbs.length === 0) delete this._evinfo[ev];
@@ -459,16 +458,16 @@ export class Emitter<
 
   /** Emit data for an event. Changes to listeners during this loop are queued until the loop completes. */
   public emit<Ev extends keyof BaseEvents | keyof DerivedEvents>(
-    event: Ev,
+    ev: Ev,
     ...data: EvData<BaseEvents, DerivedEvents, Ev>
   ): this {
     /*· {*/
 
-    if (this._evinfo[event])
-      for (const [cb, { once, filter }] of [...this._evinfo[event]!])
+    if (this._evinfo[ev])
+      for (const [cb, { once, filter }] of [...this._evinfo[ev]!])
         if (filter ? filter(data) : true) {
           cb(...data);
-          if (once) this.off(event, cb as EvListener<BaseEvents, DerivedEvents, Ev>);
+          if (once) this.off(ev, cb as EvListener<BaseEvents, DerivedEvents, Ev>);
         }
 
     return this;
