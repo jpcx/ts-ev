@@ -345,7 +345,7 @@ test("Emitter", async (test) => {
 
     let correctdata: { foo: "bar" } | null = null;
 
-    e.on<"foo", [{ foo: "bar" }]>(
+    e.on(
       "foo",
       (data) => {
         correctdata = data;

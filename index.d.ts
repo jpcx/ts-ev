@@ -5,7 +5,7 @@ export declare class Emitter<BaseEvents extends {
 } = {}> {
     private _evinfo;
     constructor();
-    on<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, listener: (...args: Data) => any, options?: {
+    on<Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev>>(ev: Ev, listener: (...data: Data) => any, options?: {
         filter?: DataFilter<BaseEvents, DerivedEvents, Ev, Data>;
         protect?: boolean;
     }): this;
@@ -61,6 +61,5 @@ declare type DataFilter<BaseEvents extends {
     [event: string]: (...args: any[]) => any;
 }, DerivedEvents extends {
     [event: string]: (...args: any[]) => any;
-}, Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>> = Exact<Data, EvData<BaseEvents, DerivedEvents, Ev>> extends never ? Ev extends keyof BaseEvents ? (data: Parameters<BaseEvents[Ev]>) => data is Data : Ev extends keyof DerivedEvents ? (data: Parameters<DerivedEvents[Ev]>) => data is Data : never : never;
-declare type Exact<T, U> = (<G>() => G extends T ? 1 : 2) extends <G>() => G extends U ? 1 : 2 ? T : never;
+}, Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>> = <From extends EvData<BaseEvents, DerivedEvents, Ev>>(args: From) => args is Data;
 export {};
