@@ -61,7 +61,18 @@
  * @example
  *   import { Emitter } from "ts-ev";
  *   
+ *   // standard usage, no extensions
+ *   const emitter = new Emitter<{
+ *     foo: (bar: "baz") => any
+ *   }>();
+ *   
+ *   // emitter.emit("foo", "bar"); // TS error
+ *   // emitter.emit("bar", "bar"); // TS error
+ *   emitter.emit("foo", "baz");    // OK
+ *   
+ *   // extend Emitter
  *   class Foo<
+ *     // use a tparam to forward derived events to Emitter (allow event extensions)
  *     DerivedEvents extends Emitter.Events.Except<"baseEv1" | "baseEv2">
  *   > extends Emitter<
  *     {

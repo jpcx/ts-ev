@@ -1,4 +1,4 @@
-[![](https://github.com/jpcx/ts-ev/blob/0.3.0/assets/logo.png)](#)
+[![](https://github.com/jpcx/ts-ev/blob/0.3.1/assets/logo.png)](#)
 
 ![](https://img.shields.io/github/issues/jpcx/ts-ev)
 ![](https://img.shields.io/github/forks/jpcx/ts-ev)
@@ -6,17 +6,20 @@
 ![](https://img.shields.io/npm/dm/ts-ev)  
 ![](https://img.shields.io/librariesio/dependents/npm/ts-ev)
 ![](https://img.shields.io/github/license/jpcx/ts-ev)
-![](https://img.shields.io/librariesio/github/jpcx/ts-ev?label=dev-dependencies)
 
 [![](https://nodei.co/npm/ts-ev.png?mini=true)](https://www.npmjs.com/package/ts-ev)
 
 ts-ev is a typed event emitter that provides removal protection, filtering, and inheritance.
 
-Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class such that each derived class has full access to its own events.
+Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class:
+- Each derived class may
+  - extend their parent functionality,
+  - extend their parent events,
+  - and define additional events.
 
-ts-ev has zero imports, so it should be usable in any environment.
+ts-ev has zero imports, so it should be usable in any TS environment.
 
-**[CHANGELOG](https://github.com/jpcx/ts-ev/blob/0.3.0/CHANGELOG.md)**
+**[CHANGELOG](https://github.com/jpcx/ts-ev/blob/0.3.1/CHANGELOG.md)**
 
 ## Features
 
@@ -75,7 +78,17 @@ Data:
 ```ts
 import { Emitter } from "ts-ev";
 
+// standard usage, no extensions
+const emitter = new Emitter<{
+  foo: (bar: "baz") => any
+}>();
+
+// emitter.emit("foo", "bar"); // TS error
+emitter.emit("foo", "baz");    // OK
+
+// extend Emitter
 class Foo<
+  // use a tparam to forward derived events to Emitter (allow event extensions)
   DerivedEvents extends Emitter.Events.Except<"baseEv1" | "baseEv2">
 > extends Emitter<
   {
@@ -178,4 +191,4 @@ Contribution is welcome! Please raise an issue or make a pull request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.3.0/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.3.1/LICENSE) file for details
