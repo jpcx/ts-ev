@@ -49,27 +49,53 @@
  *     - e.g.: `(args: [number, string]): args is [1, "foo"] => args[0] === 1 && args[1] === "foo"`
  *   - Filtering changes the listener parameters type.
  *
- * @tparam BaseEvents:
- *   - Maps any listeners that are used directly by the top-level emitter to an event string.
+ * Template Parameters:
+ *   ```ts
+ *   export class Emitter<
+ *     BaseEvents    extends { [event: string]: (...args: any[]) => any },
+ *     DerivedEvents extends { [event: string]: (...args: any[]) => any } = {},
+ *   > { ... }
+ *   ```
  *
- * @tparam DerivedEvents:
- *   - Maps any listeners that are not statically known by the base class to an event string.
- *     - These events are only available to derived classes.
- *   - To enable event inheritance, base classes must forward a template argument that defines the derived event listeners.
- *     - This tparam should prohibit derivation of the base events; see the example.
+ *   Two template parameters are provided, one for base events and another for derived events.
+ *   This is to allow for extensions of an emitter-derived class that define additional events.
+ *
+ *   For example:
+ *
+ *   ```ts
+ *   // allows derived classes to define additional events (but prohibits additional "foo" events)
+ *   class Foo<DerivedEvents extends Emitter.Events.Except<"foo">>
+ *       extends Emitter<{ foo: (data: "bar") => any }, DerivedEvents> {
+ *     constructor() {
+ *       this.emit("foo", "bar"); // OK
+ *     }
+ *   }
+ *
+ *   // extend the functionality of Foo and define additional events
+ *   class Bar extends Foo<{ bar: (data: "baz") => any }> {
+ *     constructor() {
+ *       this.emit("foo", "bar"); // OK
+ *       this.emit("bar", "baz"); // OK
+ *     }
+ *   }
+ *   ```
+ *
+ *   In this example, the `Emitter` `BaseEvents` defined by `Foo` are statically known to it
+ *   and therefore can be used within the class and its descendants. It's `DerivedEvents`
+ *   are not statically known by it, so they may only be used by the derived class that defines them (`Bar`).
  *
  * @example
  *   import { Emitter } from "ts-ev";
- *   
+ *
  *   // standard usage, no extensions
  *   const emitter = new Emitter<{
  *     foo: (bar: "baz") => any
  *   }>();
- *   
+ *
  *   // emitter.emit("foo", "bar"); // TS error
  *   // emitter.emit("bar", "bar"); // TS error
  *   emitter.emit("foo", "baz");    // OK
- *   
+ *
  *   // extend Emitter
  *   class Foo<
  *     // use a tparam to forward derived events to Emitter (allow event extensions)
@@ -85,32 +111,32 @@
  *       super();
  *       setTimeout(() => this.emit("baseEv1", 1, "foo", true), 100);
  *       setTimeout(() => this.emit("baseEv2"), 1000);
- *   
+ *
  *       // this.emit("derivedEv")    // ts error
  *       // this.emit("anythingElse") // ts error
  *     }
  *   }
- *   
+ *
  *   const foo = new Foo();
- *   
+ *
  *   // standard on/once/off functionality
- *   
+ *
  *   await foo.once("baseEv2");
  *   const l = () => console.log("received");
  *   foo.on("baseEv2", l);
  *   foo.off("baseEv2", l);
  *   // or foo.off("baseEv2");
  *   // or foo.off();
- *   
+ *
  *   // protection
- *   
+ *
  *   foo.on("baseEv2", l, { protect: true });
  *   foo.off("baseEv2"); // does not remove the above listener
  *   foo.off(); // does not remove the above listener
  *   foo.off("baseEv2", l); // OK
- *   
+ *
  *   // filtering
- *   
+ *
  *   foo.on(
  *     "baseEv1",
  *     // TS Types:
@@ -124,7 +150,7 @@
  *         data[0] === 1 && data[1] === "foo",
  *     }
  *   );
- *   
+ *
  *   // TS Types:
  *   //   const two: 2
  *   //   const baz: "baz"
@@ -132,9 +158,9 @@
  *     filter: (data: [number, string, boolean]): data is [2, "bar", boolean] =>
  *       data[0] === 2 && data[1] === "baz",
  *   });
- *   
+ *
  *   // inheritance
- *   
+ *
  *   // extending the Foo emitter
  *   // note: this only works because Foo passes its DerivedEvents tparam to Emitter
  *   class Bar extends Foo<{
@@ -142,14 +168,14 @@
  *   }> {
  *     constructor() {
  *       super();
- *   
+ *
  *       // can operate on base class events
  *       setTimeout(() => this.emit("baseEv1", 1, "foo", true), 100);
  *       // can operate on events provided to Foo via OtherEvents
  *       setTimeout(() => this.emit("derivedEv", "more", "to", "emitter"), 200);
  *     }
  *   }
- *   
+ *
  *   const bar = new Bar();
  *   bar.on("baseEv2", () => console.log("receives base class events!"));
  *   bar.on("derivedEv", () => console.log("receives derived class events!"));

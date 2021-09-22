@@ -28,7 +28,7 @@ Execution Order Guarantees:
   - In other words, listener changes during the emit loop do not effect the loop.
 - Listeners are executed in their order of addition.
   - Listeners may be prepended.
-- Matches the behavior of EventEmitter from "events".
+- Matches the behavior of `EventEmitter` from "events".
 
 Protection:
   - `.off()` will not remove the listener unless it is explicitly specified.
@@ -49,14 +49,29 @@ export class Emitter<
 > { ... }
 ```
 
-BaseEvents:
-- Maps any listeners that are used directly by the top-level emitter to an event string.
+Two template parameters are provided, one for base events and another for derived events. This is to allow for extensions of an emitter-derived class that define additional events.
 
-DerivedEvents:
-- Maps any listeners that are not statically known by the base class to an event string.
-  - These events are only available to derived classes.
-- To enable event inheritance, base classes must forward a template argument that defines the derived event listeners.
-  - This tparam should prohibit derivation of the base events; see the example.
+For example:
+
+```ts
+// allows derived classes to define additional events (but prohibits additional "foo" events)
+class Foo<DerivedEvents extends Emitter.Events.Except<"foo">>
+    extends Emitter<{ foo: (data: "bar") => any }, DerivedEvents> {
+  constructor() {
+    this.emit("foo", "bar"); // OK
+  }
+}
+
+// extend the functionality of Foo and define additional events
+class Bar extends Foo<{ bar: (data: "baz") => any }> {
+  constructor() {
+    this.emit("foo", "bar"); // OK
+    this.emit("bar", "baz"); // OK
+  }
+}
+```
+
+In this example, the `Emitter` `BaseEvents` defined by `Foo` are statically known to it and therefore can be used within the class and its descendants. It's `DerivedEvents` are not statically known by it, so they may only be used by the derived class that defines them (`Bar`).
 
 ```ts
 public [on|prependOn|once|prependOnce]<
