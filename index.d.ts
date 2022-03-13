@@ -61,5 +61,5 @@ declare type DataFilter<BaseEvents extends {
     [event: string]: (...args: any[]) => any;
 }, DerivedEvents extends {
     [event: string]: (...args: any[]) => any;
-}, Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>> = <From extends EvData<BaseEvents, DerivedEvents, Ev>>(args: From) => args is Data;
+}, Ev extends keyof BaseEvents | keyof DerivedEvents, Data extends EvData<BaseEvents, DerivedEvents, Ev>> = (args: EvData<BaseEvents, DerivedEvents, Ev>) => args is Data;
 export {};

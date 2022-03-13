@@ -2,7 +2,7 @@
 
 <a name="0.3.1"></a>
 
-## [0.3.1](https://github.com/jpcx/ts-ev/tree/0.3.1) (2021-09-15)
+## [0.3.1](https://github.com/jpcx/ts-ev/tree/0.3.1) (2022-03-13)
 
 | __[Changes since 0.3.0](https://github.com/jpcx/ts-ev/compare/0.3.0...0.3.1)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.3.1) | [README](https://github.com/jpcx/ts-ev/tree/0.3.1/README.md) |
 | --- | --- | --- |
@@ -13,6 +13,11 @@
 ### Changed
 
 - Clarified inheritance summary in the README.
+- Updated `typescript` and `@types/node` dependencies.
+
+### Fixed
+
+- `DataFilter` type assertion fix.
 
 <a name="0.3.0"></a>
 

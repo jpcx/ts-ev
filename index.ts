@@ -8,7 +8,7 @@
  *                     @link http://github.com/jpcx/ts-ev                     *
  *                                                                            *
  * @license MIT                                                               *
- * @copyright 2021 @author Justin Collier <m@jpcx.dev>                        *
+ * @copyright 2021-2022 @author Justin Collier <m@jpcx.dev>                   *
  *                                                                            *
  * Permission is hereby granted, free of charge, to any person obtaining a    *
  * copy of this software and associated documentation files (the "Software"), *
@@ -574,8 +574,8 @@ type DataFilter<
   BaseEvents extends { [event: string]: (...args: any[]) => any },
   DerivedEvents extends { [event: string]: (...args: any[]) => any },
   Ev extends keyof BaseEvents | keyof DerivedEvents,
-  Data extends EvData<BaseEvents, DerivedEvents, Ev> = EvData<BaseEvents, DerivedEvents, Ev>
-> = <From extends EvData<BaseEvents, DerivedEvents, Ev>>(args: From) => args is Data;
+  Data extends EvData<BaseEvents, DerivedEvents, Ev>
+> = (args: EvData<BaseEvents, DerivedEvents, Ev>) => args is Data;
 
 // vim: fdm=marker:fmr=\ {*/,\ }*/
 
