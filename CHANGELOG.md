@@ -1,19 +1,19 @@
 # Changelog
 
-<a name="0.3.1"></a>
+<a name="0.4.0"></a>
 
-## [0.3.1](https://github.com/jpcx/ts-ev/tree/0.3.1) (2022-03-13)
+## [0.4.0](https://github.com/jpcx/ts-ev/tree/0.3.1) (2022-03-13)
 
-| __[Changes since 0.3.0](https://github.com/jpcx/ts-ev/compare/0.3.0...0.3.1)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.3.1) | [README](https://github.com/jpcx/ts-ev/tree/0.3.1/README.md) |
+| __[Changes since 0.3.0](https://github.com/jpcx/ts-ev/compare/0.3.0...0.4.0)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.4.0) | [README](https://github.com/jpcx/ts-ev/tree/0.4.0/README.md) |
 | --- | --- | --- |
 
-| [Source Code (zip)](https://github.com/jpcx/ts-ev/archive/0.3.1.zip) | [Source Code (tar.gz)](https://github.com/jpcx/ts-ev/archive/0.3.1.tar.gz) |
+| [Source Code (zip)](https://github.com/jpcx/ts-ev/archive/0.4.0.zip) | [Source Code (tar.gz)](https://github.com/jpcx/ts-ev/archive/0.4.0.tar.gz) |
 | --- | --- |
 
 ### Changed
 
 - Clarified inheritance summary in the README.
-- Updated `typescript` and `@types/node` dependencies.
+- Updated all dependencies to latest versions.
 
 ### Fixed
 
