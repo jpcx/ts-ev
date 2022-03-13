@@ -1,4 +1,4 @@
-[![](https://github.com/jpcx/ts-ev/blob/0.3.0/assets/logo.png)](#)
+[![](https://github.com/jpcx/ts-ev/blob/0.4.0/assets/logo.png)](#)
 
 ![](https://img.shields.io/github/issues/jpcx/ts-ev)
 ![](https://img.shields.io/github/forks/jpcx/ts-ev)
@@ -6,17 +6,20 @@
 ![](https://img.shields.io/npm/dm/ts-ev)  
 ![](https://img.shields.io/librariesio/dependents/npm/ts-ev)
 ![](https://img.shields.io/github/license/jpcx/ts-ev)
-![](https://img.shields.io/librariesio/github/jpcx/ts-ev?label=dev-dependencies)
 
 [![](https://nodei.co/npm/ts-ev.png?mini=true)](https://www.npmjs.com/package/ts-ev)
 
 ts-ev is a typed event emitter that provides removal protection, filtering, and inheritance.
 
-Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class such that each derived class has full access to its own events.
+Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily deep extensions of its Emitter class:
+- Each derived class may
+  - extend their parent functionality,
+  - extend their parent events,
+  - and define additional events.
 
-ts-ev has zero imports, so it should be usable in any environment.
+ts-ev has zero imports, so it should be usable in any TS environment.
 
-**[CHANGELOG](https://github.com/jpcx/ts-ev/blob/0.3.0/CHANGELOG.md)**
+**[CHANGELOG](https://github.com/jpcx/ts-ev/blob/0.4.0/CHANGELOG.md)**
 
 ## Features
 
@@ -25,7 +28,7 @@ Execution Order Guarantees:
   - In other words, listener changes during the emit loop do not effect the loop.
 - Listeners are executed in their order of addition.
   - Listeners may be prepended.
-- Matches the behavior of EventEmitter from "events".
+- Matches the behavior of `EventEmitter` from "events".
 
 Protection:
   - `.off()` will not remove the listener unless it is explicitly specified.
@@ -46,14 +49,29 @@ export class Emitter<
 > { ... }
 ```
 
-BaseEvents:
-- Maps any listeners that are used directly by the top-level emitter to an event string.
+Two template parameters are provided, one for base events and another for derived events. This is to allow for extensions of an emitter-derived class that define additional events.
 
-DerivedEvents:
-- Maps any listeners that are not statically known by the base class to an event string.
-  - These events are only available to derived classes.
-- To enable event inheritance, base classes must forward a template argument that defines the derived event listeners.
-  - This tparam should prohibit derivation of the base events; see the example.
+For example:
+
+```ts
+// allows derived classes to define additional events (but prohibits additional "foo" events)
+class Foo<DerivedEvents extends Emitter.Events.Except<"foo">>
+    extends Emitter<{ foo: (data: "bar") => any }, DerivedEvents> {
+  constructor() {
+    this.emit("foo", "bar"); // OK
+  }
+}
+
+// extend the functionality of Foo and define additional events
+class Bar extends Foo<{ bar: (data: "baz") => any }> {
+  constructor() {
+    this.emit("foo", "bar"); // OK
+    this.emit("bar", "baz"); // OK
+  }
+}
+```
+
+In this example, the `Emitter` `BaseEvents` defined by `Foo` are statically known to it and therefore can be used within the class and its descendants. It's `DerivedEvents` are not statically known by it, so they may only be used by the derived class that defines them (`Bar`).
 
 ```ts
 public [on|prependOn|once|prependOnce]<
@@ -75,7 +93,17 @@ Data:
 ```ts
 import { Emitter } from "ts-ev";
 
+// standard usage, no extensions
+const emitter = new Emitter<{
+  foo: (bar: "baz") => any
+}>();
+
+// emitter.emit("foo", "bar"); // TS error
+emitter.emit("foo", "baz");    // OK
+
+// extend Emitter
 class Foo<
+  // use a tparam to forward derived events to Emitter (allow event extensions)
   DerivedEvents extends Emitter.Events.Except<"baseEv1" | "baseEv2">
 > extends Emitter<
   {
@@ -178,4 +206,4 @@ Contribution is welcome! Please raise an issue or make a pull request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.3.0/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.4.0/LICENSE) file for details
