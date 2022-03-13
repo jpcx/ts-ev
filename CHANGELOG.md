@@ -2,7 +2,7 @@
 
 <a name="0.4.0"></a>
 
-## [0.4.0](https://github.com/jpcx/ts-ev/tree/0.3.1) (2022-03-13)
+## [0.4.0](https://github.com/jpcx/ts-ev/tree/0.4.0) (2022-03-13)
 
 | __[Changes since 0.3.0](https://github.com/jpcx/ts-ev/compare/0.3.0...0.4.0)__ | [Release Notes](https://github.com/jpcx/ts-ev/releases/tag/0.4.0) | [README](https://github.com/jpcx/ts-ev/tree/0.4.0/README.md) |
 | --- | --- | --- |
