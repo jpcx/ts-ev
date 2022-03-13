@@ -1,4 +1,4 @@
-[![](https://github.com/jpcx/ts-ev/blob/0.3.1/assets/logo.png)](#)
+[![](https://github.com/jpcx/ts-ev/blob/0.4.0/assets/logo.png)](#)
 
 ![](https://img.shields.io/github/issues/jpcx/ts-ev)
 ![](https://img.shields.io/github/forks/jpcx/ts-ev)
@@ -19,7 +19,7 @@ Unlike other typed event emitters, ts-ev includes a mechanism for arbitrarily de
 
 ts-ev has zero imports, so it should be usable in any TS environment.
 
-**[CHANGELOG](https://github.com/jpcx/ts-ev/blob/0.3.1/CHANGELOG.md)**
+**[CHANGELOG](https://github.com/jpcx/ts-ev/blob/0.4.0/CHANGELOG.md)**
 
 ## Features
 
@@ -206,4 +206,4 @@ Contribution is welcome! Please raise an issue or make a pull request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.3.1/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/jpcx/ts-ev/blob/0.4.0/LICENSE) file for details
